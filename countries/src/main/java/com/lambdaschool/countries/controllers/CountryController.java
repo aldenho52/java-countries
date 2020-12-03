@@ -90,4 +90,22 @@ public class CountryController
         myList.sort((c1, c2) -> (int)(c1.getPopulation() - c2.getPopulation()));
         return new ResponseEntity<>(myList.get(myList.size() - 1), HttpStatus.OK);
     }
+
+//    http://localhost:8080/population/median
+    @GetMapping(value = "/population/median", produces = "application/json")
+    public ResponseEntity<?> populationMedian()
+    {
+        List<Country> myList = new ArrayList<>();
+        countryrepos.findAll().iterator().forEachRemaining(myList::add);
+        myList.sort((c1, c2) -> (int)(c1.getPopulation() - c2.getPopulation()));
+//        if (myList.size() % 2 == 0) {
+//            int num1 = myList.size()/2;
+//            int num2 = (myList.size()/2) - 1;
+//            myList.get(num1).getPopulation() + myL
+//        } else {
+//
+//        }
+        return new ResponseEntity<>(myList.get((int)Math.floor(myList.size()/2)), HttpStatus.OK);
+    }
 }
+
