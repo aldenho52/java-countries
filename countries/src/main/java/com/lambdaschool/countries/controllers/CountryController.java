@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -17,6 +18,20 @@ public class CountryController
 {
     @Autowired
     CountryRepository countryrepos;
+
+    private List<Country> findCountries(List<Country> myList, CheckCountry tester)
+    {
+        List<Country> tempList = new ArrayList<>();
+
+        for (Country c : myList)
+        {
+            if (tester.test(c))
+            {
+                tempList.add(c);
+            }
+        }
+        return tempList;
+    }
 
     //    http://localhost:8080/names/all
     @GetMapping(value="/names/all", produces = "application/json")
@@ -29,7 +44,34 @@ public class CountryController
     }
 
     //    http://localhost:8080/names/start/u
+    @GetMapping(value="/names/start/{letter}", produces = "application/json")
+    public ResponseEntity<?> listAllCountriesByFirstLetter(@PathVariable char letter)
+    {
+        List<Country> myList = new ArrayList<>();
+        countryrepos.findAll().iterator().forEachRemaining(myList::add);
+        List<Country> rtnList = findCountries(myList, c -> Character.toLowerCase(c.getName().charAt(0)) == Character.toLowerCase(letter));
+        rtnList.sort((c1, c2) -> c1.getName().compareToIgnoreCase(c2.getName()));
+        return new ResponseEntity<>(rtnList, HttpStatus.OK);
+    }
+
     //    http://localhost:8080/population/total
+    @GetMapping(value = "/population/total", produces = "application/json")
+    public ResponseEntity<?> totalPopulation()
+    {
+        List<Country> myList = new ArrayList<>();
+        countryrepos.findAll().iterator().forEachRemaining(myList::add);
+
+        long total = 0;
+        for (Country c : myList)
+        {
+            total += c.getPopulation();
+        }
+
+        System.out.println("The Total Population is " + total);
+        return new ResponseEntity<>(total, HttpStatus.OK);
+    }
+
+
     //    http://localhost:8080/population/min
     //    http://localhost:8080/population/max
 }
