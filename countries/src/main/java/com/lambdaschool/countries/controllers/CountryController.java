@@ -71,7 +71,23 @@ public class CountryController
         return new ResponseEntity<>(total, HttpStatus.OK);
     }
 
-
     //    http://localhost:8080/population/min
+    @GetMapping(value = "/population/min", produces = "application/json")
+    public ResponseEntity<?> populationMin()
+    {
+        List<Country> myList = new ArrayList<>();
+        countryrepos.findAll().iterator().forEachRemaining(myList::add);
+        myList.sort((c1, c2) -> (int)(c1.getPopulation() - c2.getPopulation()));
+        return new ResponseEntity<>(myList.get(0), HttpStatus.OK);
+    }
+
     //    http://localhost:8080/population/max
+    @GetMapping(value = "/population/max", produces = "application/json")
+    public ResponseEntity<?> populationMax()
+    {
+        List<Country> myList = new ArrayList<>();
+        countryrepos.findAll().iterator().forEachRemaining(myList::add);
+        myList.sort((c1, c2) -> (int)(c1.getPopulation() - c2.getPopulation()));
+        return new ResponseEntity<>(myList.get(myList.size() - 1), HttpStatus.OK);
+    }
 }
